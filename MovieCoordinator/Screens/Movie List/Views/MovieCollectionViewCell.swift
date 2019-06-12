@@ -22,8 +22,14 @@ public class MovieCollectionViewCell: UICollectionViewCell {
     public var movie: Movie! {
         didSet {
             self.titleLabel.text = movie?.title
-            self.imageView.kf.setImage(with: movie?.posterURL, placeholder: nil, options: nil, progressBlock: nil) { (_, error, _, _) in
-                self.titleLabel.isHidden = error == nil
+            self.imageView.kf.setImage(with: movie?.posterURL, placeholder: nil, options: nil, progressBlock: nil) { result in
+                switch result {
+                case .failure(let error):
+                    self.titleLabel.isHidden = false
+                    print("Image download error: \(error)")
+                case .success(_):
+                    self.titleLabel.isHidden = true
+                }
             }
             
             let voteCount = movie?.voteCount ?? 0
